@@ -41,9 +41,9 @@
 			EMPTY = $('<div class="jcartography-empty" />').width(VIEWPORT_WIDTH).height(VIEWPORT_HEIGHT).appendTo(OUTMAP),
 			// shortcuts
 			$window = $(window),
-			EASEIN = ('easing' in $) ? 'easeInCirc' : 'linear',
-			EASEOUT = ('easing' in $) ? 'easeOutCirc' : 'linear',
-			EASEINOUT = ('easing' in $) ? 'easeInOutCirc' : 'linear',
+			EASEIN = ('easeInCirc' in $.easing) ? 'easeInCirc' : 'linear',
+			EASEOUT = ('easeOutCirc' in $.easing) ? 'easeOutCirc' : 'linear',
+			EASEINOUT = ('easeInOutCirc' in $.easing) ? 'easeInOutCirc' : 'linear',
 			floor = Math.floor,
 			ceil = function(n){return floor(n+1);},
 			min = Math.min,
