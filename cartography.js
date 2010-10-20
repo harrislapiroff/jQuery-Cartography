@@ -229,7 +229,6 @@
 			mapposition: (function (x,y) {
 				var left = - (x * FULL_WIDTH) - (VIEWPORT_WIDTH / 2),
 					top = - (y * FULL_HEIGHT) - (VIEWPORT_HEIGHT / 2);
-				console.log(left, top);
 				INMAP.css({
 					'left': left,
 					'top': top
