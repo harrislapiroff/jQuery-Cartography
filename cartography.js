@@ -37,7 +37,7 @@
 			OUTMAP = $('<div class="jcartography-outmap" />').width(VIEWPORT_WIDTH).height(VIEWPORT_HEIGHT).appendTo(WRAPPER),
 			INMAPWRAP = $('<div class="jcartography-inmapwrap" />').width(VIEWPORT_WIDTH).height(VIEWPORT_HEIGHT).appendTo(OUTMAP),
 			INMAP = $('<div class="jcartography-inmap" />').width(FULL_WIDTH).height(FULL_HEIGHT).appendTo(INMAPWRAP).disableSelect(),
-			STYLES = $('<style type="text/css" />').appendTo(document.head),
+			STYLES = $('<style type="text/css" />').appendTo('head'),
 			EMPTY = $('<div class="jcartography-empty" />').width(VIEWPORT_WIDTH).height(VIEWPORT_HEIGHT).appendTo(OUTMAP),
 			// shortcuts
 			$window = $(window),
@@ -98,6 +98,7 @@
 			INMAP.stop();
 			$window.bind('mousemove.cartodrag',drag)
 			WRAPPER.trigger('movestart');
+			e.preventDefault();
 		};
 		terminate_drag = function (e) {
 			var x_per_ms = drag.xmotion / drag.timedelta,
