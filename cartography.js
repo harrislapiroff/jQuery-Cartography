@@ -191,6 +191,7 @@
 		STYLES.html([
 			'.jcartography-outmap{',
 			'cursor:move;',
+			'position:relative;',
 			'}'
 		].join(''));
 		
