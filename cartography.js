@@ -66,7 +66,7 @@
 					'count': n,
 					'image': [TILE_PREFIX, n, TILE_SUFFIX].join('') // generate the url for the image file
 				};
-				MATRIX[i][j].tile = $(['<div id="tile_', i, '_', j, '">loading...</div>'].join('')).css({
+				MATRIX[i][j].tile = $(['<div id="tile_', i, '_', j, '" />'].join('')).css({
 					width: TILE_WIDTH,
 					height: TILE_HEIGHT,
 					position: 'absolute',
@@ -105,8 +105,8 @@
 			// make sure the ratio has changed--else they've just clicked
 			if(drag.last_x_ratio !== x_per_ms && drag.last_y_ratio !== y_per_ms){
 				INMAP.animate({
-					top: INMAP.offset().top + 1000*y_per_ms,
-					left: INMAP.offset().left + 1000*x_per_ms,
+					top: INMAP.position().top + 1000*y_per_ms,
+					left: INMAP.position().left + 1000*x_per_ms,
 				}, {duration: 2000, easing: EASEOUT});
 				// check every 250 ms if the map is past the viewport and snap it back
 				for(i = 250; i <= 2000 + 250; i += 250){
@@ -125,19 +125,19 @@
 				drag.timedelta = time - drag.capturetime;
 				drag.capturetime = time;
 			INMAP.stop();
-			INMAP.offset({
-				top: INMAP.offset().top + ymotion,
-				left: INMAP.offset().left + xmotion
+			INMAP.css({
+				top: parseInt(INMAP.css('top')) + ymotion,
+				left: parseInt(INMAP.css('left')) + xmotion
 			});
 			drag.xcache = e.clientX;
 			drag.ycache = e.clientY;
 			WRAPPER.trigger('mapmove');
 		};
 		map_back_to_place = function () {
-			var top_min = INMAP.offset().top > 0,
-				left_min = INMAP.offset().left > 0,
-				top_max = INMAP.offset().top < -FULL_HEIGHT + VIEWPORT_HEIGHT,
-				left_max = INMAP.offset().left < -FULL_WIDTH + VIEWPORT_WIDTH;
+			var top_min = INMAP.position().top > 0,
+				left_min = INMAP.position().left > 0,
+				top_max = INMAP.position().top < -FULL_HEIGHT + VIEWPORT_HEIGHT,
+				left_max = INMAP.position().left < -FULL_WIDTH + VIEWPORT_WIDTH;
 			if(top_min || left_min || top_max || left_max){
 				INMAP.stop();
 			}
@@ -164,7 +164,7 @@
 		};
 		// determine which tiles to load and load them
 		load_tiles = function () {
-			var top_corner = INMAP.offset(),
+			var top_corner = INMAP.position(),
 				bottom_corner = {top: top_corner.top - VIEWPORT_HEIGHT, left: top_corner.left - VIEWPORT_WIDTH},
 				// select all the tiles in range with a 1 tile buffer around them
 				i_min = max(0, floor(-top_corner.top/TILE_HEIGHT)-1),
