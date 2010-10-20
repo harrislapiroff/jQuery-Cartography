@@ -198,7 +198,7 @@
 			
 		};
 		
-		WRAPPER.bind('mapmovecomplete', map_back_to_place)
+		WRAPPER.bind('mapmovecomplete', map_back_to_place);
 		WRAPPER.bind('mapmove', load_tiles);
 		OUTMAP.bind('mousedown.cartodrag', initiate_drag);
 		$window.bind('mouseup.cartodrag', terminate_drag);
@@ -213,6 +213,7 @@
 			'}',
 			'.jcartography-inmap{',
 			'border:1px solid #CCC;',
+			'background:#FFF;',
 			'margin:-1px;',
 			'}',
 			'.jcartography-loading{',
@@ -235,6 +236,7 @@
 				});
 				WRAPPER.trigger('mapmove')
 				WRAPPER.trigger('mapmovecomplete');
+				return WRAPPER;
 			})
 		});
 		
