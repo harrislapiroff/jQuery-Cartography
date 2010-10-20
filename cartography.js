@@ -112,11 +112,11 @@
 					duration: 2000,
 					easing: EASEOUT,
 					step: (function(){WRAPPER.trigger('mapmove')}),
-					complete: (function(){WRAPPER.trigger('movecomplete');})	
+					complete: (function(){WRAPPER.trigger('mapmovecomplete');})	
 				});
-			// otherwise stop the map from moving and trigger movecomplete
+			// otherwise stop the map from moving and trigger mapmovecomplete
 			}else{
-				WRAPPER.trigger('movecomplete');
+				WRAPPER.trigger('mapmovecomplete');
 			}
 			drag.last_x_ratio = drag.xmotion / drag.timedelta;
 			drag.last_y_ratio = drag.xmotion / drag.timedelta;
@@ -148,22 +148,22 @@
 			if(top_min){
 				INMAP.animate({
 					top:0
-				}, {duration: 250, easing: EASEOUT, queue: false, step: (function(){WRAPPER.trigger('mapmove');}), complete: (function(){WRAPPER.trigger('movecomplete');}) });
+				}, {duration: 250, easing: EASEOUT, queue: false, step: (function(){WRAPPER.trigger('mapmove');}), complete: (function(){WRAPPER.trigger('mapmovecomplete');}) });
 			}
 			if(left_min){
 				INMAP.animate({
 					left:0
-				}, {duration: 250, easing: EASEOUT, queue: false, step: (function(){WRAPPER.trigger('mapmove');}), complete: (function(){WRAPPER.trigger('movecomplete');})});
+				}, {duration: 250, easing: EASEOUT, queue: false, step: (function(){WRAPPER.trigger('mapmove');}), complete: (function(){WRAPPER.trigger('mapmovecomplete');})});
 			}
 			if(top_max){
 				INMAP.animate({
 					top: -FULL_HEIGHT + VIEWPORT_HEIGHT
-				}, {duration: 250, easing: EASEINOUT, queue: false, step: (function(){WRAPPER.trigger('mapmove');}), complete: (function(){WRAPPER.trigger('movecomplete');})});
+				}, {duration: 250, easing: EASEINOUT, queue: false, step: (function(){WRAPPER.trigger('mapmove');}), complete: (function(){WRAPPER.trigger('mapmovecomplete');})});
 			}
 			if(left_max){
 				INMAP.animate({
 					left:-FULL_WIDTH + VIEWPORT_WIDTH
-				}, {duration: 250, easing: EASEINOUT, queue: false, step: (function(){WRAPPER.trigger('mapmove');}), complete: (function(){WRAPPER.trigger('movecomplete');})});
+				}, {duration: 250, easing: EASEINOUT, queue: false, step: (function(){WRAPPER.trigger('mapmove');}), complete: (function(){WRAPPER.trigger('mapmovecomplete');})});
 			}
 		};
 		// determine which tiles to load and load them
@@ -198,7 +198,7 @@
 			
 		};
 		
-		WRAPPER.bind('movecomplete', map_back_to_place)
+		WRAPPER.bind('mapmovecomplete', map_back_to_place)
 		WRAPPER.bind('mapmove', load_tiles);
 		OUTMAP.bind('mousedown.cartodrag', initiate_drag);
 		$window.bind('mouseup.cartodrag', terminate_drag);
@@ -219,6 +219,24 @@
 			'background:#EEE;',
 			'}'
 		].join(''));
+		
+		// add some extra methods to the wrapper
+		
+		// reposition the map. x and y should be decimals from 0 to 1
+		// this is sort of an abuse of the data method, but I'll clean it up later
+		this.data({
+			mapposition: (function (x,y) {
+				var left = - (x * FULL_WIDTH) - (VIEWPORT_WIDTH / 2),
+					top = - (y * FULL_HEIGHT) - (VIEWPORT_HEIGHT / 2);
+				console.log(left, top);
+				INMAP.css({
+					'left': left,
+					'top': top
+				});
+				WRAPPER.trigger('mapmove')
+				WRAPPER.trigger('mapmovecomplete');
+			})
+		});
 		
 		// let's put some data on the element for debugging, &c.
 		WRAPPER.data('cartography_matrix', MATRIX);
