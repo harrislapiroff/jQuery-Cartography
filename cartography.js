@@ -107,16 +107,19 @@
 				INMAP.animate({
 					top: INMAP.position().top + 1000*y_per_ms,
 					left: INMAP.position().left + 1000*x_per_ms,
-				}, {duration: 2000, easing: EASEOUT});
-				// check every 250 ms if the map is past the viewport and snap it back
-				for(i = 250; i <= 2000 + 250; i += 250){
-					setTimeout(map_back_to_place, i);
-				} 
+				}, {
+					duration: 2000,
+					easing: EASEOUT,
+					step: (function(){WRAPPER.trigger('mapmove')}),
+					complete: (function(){WRAPPER.trigger('movecomplete');})	
+				});
+			// otherwise stop the map from moving and trigger movecomplete
+			}else{
+				WRAPPER.trigger('movecomplete');
 			}
 			drag.last_x_ratio = drag.xmotion / drag.timedelta;
 			drag.last_y_ratio = drag.xmotion / drag.timedelta;
 			$window.unbind('mousemove.cartodrag');
-			WRAPPER.trigger('movecomplete');
 		};
 		drag = function (e) {
 			var xmotion = drag.xmotion = e.clientX - drag.xcache,
@@ -138,50 +141,63 @@
 				left_min = INMAP.position().left > 0,
 				top_max = INMAP.position().top < -FULL_HEIGHT + VIEWPORT_HEIGHT,
 				left_max = INMAP.position().left < -FULL_WIDTH + VIEWPORT_WIDTH;
-			if(top_min || left_min || top_max || left_max){
-				INMAP.stop();
-			}
+			//if(top_min || left_min || top_max || left_max){
+			//	INMAP.stop();
+			//}
 			if(top_min){
 				INMAP.animate({
 					top:0
-				}, {duration: 250, easing: EASEOUT, queue: false});
+				}, {duration: 250, easing: EASEOUT, queue: false, step: (function(){WRAPPER.trigger('mapmove');}), complete: (function(){WRAPPER.trigger('movecomplete');}) });
 			}
 			if(left_min){
 				INMAP.animate({
 					left:0
-				}, {duration: 250, easing: EASEOUT, queue: false});
+				}, {duration: 250, easing: EASEOUT, queue: false, step: (function(){WRAPPER.trigger('mapmove');}), complete: (function(){WRAPPER.trigger('movecomplete');})});
 			}
 			if(top_max){
 				INMAP.animate({
 					top: -FULL_HEIGHT + VIEWPORT_HEIGHT
-				}, {duration: 250, easing: EASEINOUT, queue: false});
+				}, {duration: 250, easing: EASEINOUT, queue: false, step: (function(){WRAPPER.trigger('mapmove');}), complete: (function(){WRAPPER.trigger('movecomplete');})});
 			}
 			if(left_max){
 				INMAP.animate({
 					left:-FULL_WIDTH + VIEWPORT_WIDTH
-				}, {duration: 250, easing: EASEINOUT, queue: false});
+				}, {duration: 250, easing: EASEINOUT, queue: false, step: (function(){WRAPPER.trigger('mapmove');}), complete: (function(){WRAPPER.trigger('movecomplete');})});
 			}
 		};
 		// determine which tiles to load and load them
 		load_tiles = function () {
 			var top_corner = INMAP.position(),
 				bottom_corner = {top: top_corner.top - VIEWPORT_HEIGHT, left: top_corner.left - VIEWPORT_WIDTH},
+				img, i, j;
 				// select all the tiles in range with a 1 tile buffer around them
 				i_min = max(0, floor(-top_corner.top/TILE_HEIGHT)-1),
-				i_max = min(ROWS-1, ceil(-bottom_corner.top/TILE_HEIGHT)+1),
+				i_max = min(ROWS - 1, ceil(-bottom_corner.top/TILE_HEIGHT)+1),
 				j_min = max(0, floor(-top_corner.left/TILE_WIDTH)-1),
-				j_max = min(COLS-1, ceil(-bottom_corner.left/TILE_WIDTH)+1);
-			for (i = i_min; i <= i_max; i++){
-				for (j = j_min; j <= j_max; j++){
+				j_max = min(COLS - 1, ceil(-bottom_corner.left/TILE_WIDTH)+1);
+			// grid forloop... double-double
+			for (i = i_min; i <= i_max; i++){ for (j = j_min; j <= j_max; j++){
 					// if there's not currently an image in the tile
 					if( $('img', MATRIX[i][j].tile).size() === 0 ){
 						// put the image there
-						MATRIX[i][j].tile.html(['<img src="',MATRIX[i][j].image,'" />'].join(''));
+						img = $(['<img src="',MATRIX[i][j].image,'" />'].join(''));
+						img.load(function(){
+							$(this).parent().removeClass('jcartography-loading');
+						});
+						MATRIX[i][j].tile.html(img).addClass('jcartography-loading');
 					}
+			} } // end of the grid forloop
+			
+			// another double forloop -- unload the images in any tiles that aren't visible
+			for(i = 0; i < ROWS; i++){ for (j = 0; j < COLS; j++) {
+				if( i < i_min || i > i_max || j < j_min || j > j_max ){
+					MATRIX[i][j].tile.html('');
 				}
-			}
+			} } // end another double forloop
+			
 		};
 		
+		WRAPPER.bind('movecomplete', map_back_to_place)
 		WRAPPER.bind('mapmove', load_tiles);
 		OUTMAP.bind('mousedown.cartodrag', initiate_drag);
 		$window.bind('mouseup.cartodrag', terminate_drag);
@@ -192,6 +208,14 @@
 			'.jcartography-outmap{',
 			'cursor:move;',
 			'position:relative;',
+			'background:#666;',
+			'}',
+			'.jcartography-inmap{',
+			'border:1px solid #CCC;',
+			'margin:-1px;',
+			'}',
+			'.jcartography-loading{',
+			'background:#EEE;',
 			'}'
 		].join(''));
 		
