@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title></title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.js" type="text/javascript" charset="utf-8"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../cartography.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<h1>jQuery Cartography</h1>
+		<div id="wrapper" style="width:1200px; height:800px;"></div>
+		<script type="text/javascript">
+			$(function(){
+				$('#wrapper').cartography({
+					width: 6000,
+					height: 4000,
+					cols: 15,
+					rows: 10,
+					prefix: 'slices/slices_',
+					suffix: '.jpg'
+				});
+			});
+		</script>
+	</body>
+</html>
